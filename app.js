@@ -13,7 +13,7 @@ let currentNatoCode = null;
 const COORDINATE_PATTERNS = [
     // Format: 52,26755° N, 22,26155° E
     /^\s*([+-]?\d+[.,]\d+)°?\s*([NS])?\s*[,;]?\s*([+-]?\d+[.,]\d+)°?\s*([EW])?\s*$/i,
-    // Format: 52.26755, 22.26155
+    // Format: 52.26755, 22.26155 or 52.26755; 22.26155
     /^\s*([+-]?\d+[.,]\d+)\s*[,;]\s*([+-]?\d+[.,]\d+)\s*$/,
     // Format: N 52.26755, E 22.26155
     /^\s*([NS])\s*([+-]?\d+[.,]\d+)\s*[,;]\s*([EW])\s*([+-]?\d+[.,]\d+)\s*$/i
@@ -99,7 +99,7 @@ function initEventListeners() {
 
 /**
  * Parse coordinates from various formats
- * Supports: 52,26755° N, 22,26155° E or 52.26755, 22.26155 or N 52.26755, E 22.26155
+ * Supports: 52,26755° N, 22,26155° E or 52.26755, 22.26155 or 52.26755;22.26155 or N 52.26755, E 22.26155
  */
 function parseCoordinates(input) {
     const trimmed = input.trim();
