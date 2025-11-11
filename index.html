@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grid Mapper - NATO Phonetic Coordinate System</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🗺️ Grid Mapper</h1>
+            <p>NATO Phonetic Coordinate System for Poland</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="map-container">
+                <div id="map"></div>
+            </div>
+            
+            <div class="info-panel">
+                <div class="input-section">
+                    <h2>Enter NATO Code</h2>
+                    <input type="text" id="natoInput" placeholder="e.g., HSALERG or Hotel Sierra Alpha..." />
+                    <button id="decodeBtn" class="btn-primary">📍 Show on Map</button>
+                </div>
+                
+                <div id="resultPanel" class="result-panel hidden">
+                    <h2>Location Details</h2>
+                    <div class="detail-row">
+                        <span class="label">Latitude:</span>
+                        <span id="latValue" class="value">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Longitude:</span>
+                        <span id="lonValue" class="value">-</span>
+                    </div>
+                    <div class="detail-row nato-code-row">
+                        <span class="label">NATO Code:</span>
+                        <span id="natoValue" class="value nato-code">-</span>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button id="copyBtn" class="btn">📋 Copy Code</button>
+                        <button id="speakBtn" class="btn">🔊 Read Code</button>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button id="appleMapsBtn" class="btn-link">🌍 Apple Maps</button>
+                        <button id="googleMapsBtn" class="btn-link">🗺️ Google Maps</button>
+                        <button id="wazeBtn" class="btn-link">🚗 Waze</button>
+                    </div>
+                    
+                    <div class="share-section">
+                        <button id="shareBtn" class="btn-secondary">🔗 Share Location</button>
+                        <input type="text" id="shareLink" class="share-link hidden" readonly />
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="notification" class="notification hidden"></div>
+    </div>
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="nato-converter.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
