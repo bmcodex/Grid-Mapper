@@ -49,10 +49,20 @@ function initEventListeners() {
     // Decode button
     document.getElementById('decodeBtn').addEventListener('click', decodeNatoCode);
     
+    // Convert Maps button
+    document.getElementById('convertMapsBtn').addEventListener('click', convertGoogleMapsUrl);
+    
     // Enter key in input field
     document.getElementById('natoInput').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             decodeNatoCode();
+        }
+    });
+    
+    // Enter key in Google Maps input field
+    document.getElementById('googleMapsInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            convertGoogleMapsUrl();
         }
     });
     
@@ -74,6 +84,87 @@ function initEventListeners() {
 /**
  * Handle map click event
  */
+/**
+ * Extracts coordinates from a Google Maps URL.
+ * Supports short links (goo.gl/maps/...) and long links (maps.google.com/maps?q=...)
+ * @param {string} url - The Google Maps URL.
+ * @returns {object|null} {lat, lon} or null if not found.
+ */
+function extractCoordsFromGoogleMapsUrl(url) {
+    // Regex to find coordinates in the format @lat,lon,zoom
+    const regex = /@(-?\d+\.\d+),(-?\d+\.\d+)/;
+    const match = url.match(regex);
+
+    if (match && match.length >= 3) {
+        const lat = parseFloat(match[1]);
+        const lon = parseFloat(match[2]);
+        
+        if (!isNaN(lat) && !isNaN(lon)) {
+            return { lat, lon };
+        }
+    }
+    
+    // Fallback for simple query links (e.g., maps.google.com/?q=lat,lon)
+    const queryRegex = /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/;
+    const queryMatch = url.match(queryRegex);
+    
+    if (queryMatch && queryMatch.length >= 3) {
+        const lat = parseFloat(queryMatch[1]);
+        const lon = parseFloat(queryMatch[2]);
+        
+        if (!isNaN(lat) && !isNaN(lon)) {
+            return { lat, lon };
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Converts a Google Maps URL to a NATO code.
+ */
+function convertGoogleMapsUrl() {
+    const input = document.getElementById('googleMapsInput').value.trim();
+    
+    if (!input) {
+        showNotification('⚠️ Please paste a Google Maps URL', 'warning');
+        return;
+    }
+    
+    const coords = extractCoordsFromGoogleMapsUrl(input);
+    
+    if (!coords) {
+        showNotification('❌ Could not find coordinates in the provided URL.', 'error');
+        return;
+    }
+    
+    const lat = coords.lat;
+    const lon = coords.lon;
+    
+    // Validate coordinates
+    if (!isValidCoordinate(lat, lon)) {
+        showNotification('⚠️ Coordinates from URL are outside Poland boundaries', 'warning');
+        return;
+    }
+    
+    try {
+        // Convert to NATO code
+        const natoCode = gpsToNato(lat, lon);
+        
+        // Update display
+        updateDisplay(lat, lon, natoCode);
+        
+        // Add marker to map
+        addMarker(lat, lon);
+        map.setView([lat, lon], 15);
+        
+        showNotification('✅ Link converted successfully!', 'success');
+        
+    } catch (error) {
+        showNotification('❌ Error during conversion: ' + error.message, 'error');
+    }
+}
+
 function onMapClick(e) {
     const lat = e.latlng.lat;
     const lon = e.latlng.lng;
