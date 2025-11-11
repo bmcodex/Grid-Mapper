@@ -8,9 +8,6 @@ let map;
 let currentMarker;
 let currentCoordinates = null;
 let currentNatoCode = null;
-let gridVisible = false;
-let satelliteLayer = null;
-let defaultLayer = null;
 
 // Coordinate parsing patterns
 const COORDINATE_PATTERNS = [
@@ -37,23 +34,14 @@ function initMap() {
     map = L.map('map').setView([52.0, 19.0], 7);
     
     // Add OpenStreetMap tiles with a lighter theme (CartoDB Positron)
-    defaultLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         subdomains: 'abcd',
         maxZoom: 20
     }).addTo(map);
     
-    // Add Satellite layer (Esri)
-    satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: '& copy; Esri',
-        maxZoom: 20
-    });
-    
     // Add click event listener to map
     map.on('click', onMapClick);
-    
-    // Initialize grid
-    initializeGrid();
     
     // Set max bounds to Poland area
     const bounds = L.latLngBounds(
@@ -67,24 +55,14 @@ function initMap() {
  * Initialize event listeners for UI elements
  */
 function initEventListeners() {
+    initializeTabs();
+    displayAllRadioCodes();
     loadSavedLocations();
     // Decode button
     document.getElementById('decodeBtn').addEventListener('click', decodeNatoCode);
     
     // Paste Coordinates button
     document.getElementById('pasteCoordinatesBtn').addEventListener('click', convertCoordinatesToNato);
-    
-    // Map controls
-    document.getElementById('toggleGridBtn').addEventListener('click', toggleGrid);
-    document.getElementById('toggleSatelliteBtn').addEventListener('click', toggleSatellite);
-    
-    // Radio codes
-    document.getElementById('searchRadioCodeBtn').addEventListener('click', searchAndDisplayRadioCode);
-    document.getElementById('radioCodeInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            searchAndDisplayRadioCode();
-        }
-    });
     
     //    // Enter key in input field
     document.getElementById('natoInput').addEventListener('keypress', function(e) {
@@ -325,12 +303,6 @@ function addMarker(lat, lon) {
     
     // Add new marker
     currentMarker = L.marker([lat, lon], { icon: pulsingIcon }).addTo(map);
-    
-    // Add Satellite layer (Esri)
-    satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: '& copy; Esri',
-        maxZoom: 20
-    });
 }
 
 /**
@@ -482,124 +454,45 @@ function showNotification(message, type = 'info') {
 }
 
 /**
- * Initialize grid visualization
+ * Initialize tabs
  */
-let gridLayer = null;
-
-function initializeGrid() {
-    gridLayer = L.featureGroup();
-    drawGrid();
-}
-
-/**
- * Draw grid on map
- */
-function drawGrid() {
-    if (gridLayer) {
-        gridLayer.clearLayers();
-    }
+function initializeTabs() {
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
     
-    const latStep = (BOUNDS.maxLat - BOUNDS.minLat) / 10;
-    const lonStep = (BOUNDS.maxLon - BOUNDS.minLon) / 10;
-    
-    // Draw horizontal lines
-    for (let lat = BOUNDS.minLat; lat <= BOUNDS.maxLat; lat += latStep) {
-        const line = L.polyline([
-            [lat, BOUNDS.minLon],
-            [lat, BOUNDS.maxLon]
-        ], {
-            color: '#4a9eff',
-            weight: 1,
-            opacity: 0.5,
-            dashArray: '5, 5'
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tabName = this.getAttribute('data-tab');
+            
+            // Remove active class from all buttons and contents
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            
+            // Add active class to clicked button and corresponding content
+            this.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
         });
-        gridLayer.addLayer(line);
-    }
-    
-    // Draw vertical lines
-    for (let lon = BOUNDS.minLon; lon <= BOUNDS.maxLon; lon += lonStep) {
-        const line = L.polyline([
-            [BOUNDS.minLat, lon],
-            [BOUNDS.maxLat, lon]
-        ], {
-            color: '#4a9eff',
-            weight: 1,
-            opacity: 0.5,
-            dashArray: '5, 5'
-        });
-        gridLayer.addLayer(line);
-    }
+    });
 }
 
 /**
- * Toggle grid visibility
+ * Display all radio codes in list
  */
-function toggleGrid() {
-    gridVisible = !gridVisible;
-    const btn = document.getElementById('toggleGridBtn');
-    
-    if (gridVisible) {
-        map.addLayer(gridLayer);
-        btn.classList.add('active');
-        showNotification('🔲 Siatka włączona', 'info');
-    } else {
-        map.removeLayer(gridLayer);
-        btn.classList.remove('active');
-        showNotification('🔲 Siatka wyłączona', 'info');
-    }
-}
-
-/**
- * Toggle satellite layer
- */
-function toggleSatellite() {
-    const btn = document.getElementById('toggleSatelliteBtn');
-    
-    if (map.hasLayer(defaultLayer)) {
-        map.removeLayer(defaultLayer);
-        map.addLayer(satelliteLayer);
-        btn.classList.add('active');
-        showNotification('🛰️ Satelita włączony', 'info');
-    } else {
-        map.removeLayer(satelliteLayer);
-        map.addLayer(defaultLayer);
-        btn.classList.remove('active');
-        showNotification('🛰️ Satelita wyłączony', 'info');
-    }
-}
-
-/**
- * Search and display radio code
- */
-function searchAndDisplayRadioCode() {
-    const input = document.getElementById('radioCodeInput').value.trim();
-    
-    if (!input) {
-        showNotification('⚠️ Wpisz kod lub znaczenie', 'warning');
-        return;
-    }
-    
-    const results = searchRadioCode(input);
-    const resultDiv = document.getElementById('radioCodeResult');
-    
-    if (results.length === 0) {
-        resultDiv.classList.add('hidden');
-        showNotification('❌ Kod nie znaleziony', 'error');
-        return;
-    }
-    
+function displayAllRadioCodes() {
+    const codesList = document.getElementById('radioCodesList');
     let html = '';
-    results.forEach(code => {
+    
+    RADIO_CODES.forEach(code => {
         html += `
-            <div class="radio-code-item">
-                <div class="radio-code-code">${code.code}</div>
-                <div class="radio-code-meaning">${code.meaning}</div>
-                <div class="radio-code-description">${code.description}</div>
+            <div class="code-row">
+                <div class="code-header">
+                    <span class="code-code">${code.code}</span>
+                    <span class="code-meaning">${code.meaning}</span>
+                </div>
+                <div class="code-description">${code.description}</div>
             </div>
         `;
     });
     
-    resultDiv.innerHTML = html;
-    resultDiv.classList.remove('hidden');
-    showNotification(`✅ Znaleziono ${results.length} kod(ów)`, 'success');
+    codesList.innerHTML = html;
 }

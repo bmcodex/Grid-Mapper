@@ -33,6 +33,9 @@ System umożliwia użytkownikom:
 *   **Synteza Mowy:** Wbudowana funkcja "Odczytaj kod" wykorzystująca **Web Speech API** do poprawnej wymowy NATO.
 *   **Linki do Map Zewnętrznych:** Szybkie linki do otwierania lokalizacji w Apple Maps, Google Maps, Waze i OsmAnd.
 *   **Linki Udostępniania:** Lokalizacje można udostępniać za pomocą prostego parametru URL (`?c=KOD`).
+*   **Wizualizacja Siatki:** Opcjonalne nałożenie siatki Geohash na mapę do wizualizacji podziału obszaru.
+*   **Warstwa Satelitarna:** Możliwość przełączania między mapą standardową a warstwą satelitarną (Esri World Imagery).
+*   **Kody Radiowe:** Wbudowany słownik 50+ kodów radiowych (GTA RP style) z funkcją wyszukiwania i pełną listą.
 *   **Responsywność:** Pełna obsługa na komputerach stacjonarnych i urządzeniach mobilnych.
 
 ## 🧮 Algorytm Siatki NATO
@@ -121,4 +124,30 @@ Dla lokalizacji o współrzędnych `(lat, lon)` generowane są następujące lin
 *   **Google Maps:** `https://maps.google.com/?q={lat},{lon}`
 *   **Waze:** `https://waze.com/ul?ll={lat},{lon}`
 *   **OsmAnd:** `https://osmand.net/go?lat={lat}&lon={lon}&z=15`
+
+
+## 📻 System Kodów Radiowych
+
+Aplikacja zawiera wbudowany słownik **50+ kodów radiowych** inspirowanych systemem GTA RP, przeznaczonym dla komunikacji radiowej w kontekście policyjnym i ratowniczym.
+
+### Dostępne Kody
+
+Kody obejmują:
+- **Kody 10-X** (10-1 do 10-50): Standardowe kody policyjne
+- **Kody Code-X** (Code-1 do Code-5): Kody priorytetów i statusów
+
+### Przykłady Kodów
+
+| Kod | Znaczenie | Opis |
+| :--- | :--- | :--- |
+| **10-4** | Potwierdzam | Wiadomość odebrana i zrozumiana |
+| **10-20** | Moja lokalizacja | Jaka jest moja pozycja? |
+| **10-33** | Alarm | Alarm włamaniowy |
+| **Code-3** | Bardzo pilny | Szybko, z sygnałami |
+
+### Użytkowanie
+
+1. Przejdź do zakładki **"📻 Kody Radiowe"**
+2. Przeglądaj pełną listę kodów w sekcji "Wszystkie Kody"
+3. Użyj wyszukiwarki, aby znaleźć kod po numerze lub znaczeniu
 
