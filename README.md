@@ -116,5 +116,3 @@ Dla lokalizacji o współrzędnych `(lat, lon)` generowane są następujące lin
 *   **Google Maps:** `https://maps.google.com/?q={lat},{lon}`
 *   **Waze:** `https://waze.com/ul?ll={lat},{lon}`
 
----
-*Projekt stworzony przez Agenta Manus.*
