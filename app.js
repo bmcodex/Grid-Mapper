@@ -23,8 +23,8 @@ function initMap() {
     // Create map centered on Poland
     map = L.map('map').setView([52.0, 19.0], 7);
     
-    // Add OpenStreetMap tiles with dark theme
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    // Add OpenStreetMap tiles with a lighter theme (CartoDB Positron)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         subdomains: 'abcd',
         maxZoom: 20
@@ -45,6 +45,7 @@ function initMap() {
  * Initialize event listeners for UI elements
  */
 function initEventListeners() {
+    loadSavedLocations();
     // Decode button
     document.getElementById('decodeBtn').addEventListener('click', decodeNatoCode);
     
@@ -139,6 +140,26 @@ function decodeNatoCode() {
 /**
  * Update the display panel with coordinates and NATO code
  */
+function loadSavedLocations() {
+    const list = document.getElementById('locationsList');
+    list.innerHTML = ''; // Clear existing list
+
+    PREDEFINED_LOCATIONS.forEach(location => {
+        const listItem = document.createElement('li');
+        listItem.className = 'location-item';
+        listItem.innerHTML = `
+            <span class="location-name">${location.name}</span>
+            <span class="location-code">${location.code}</span>
+            <button class="btn-small" data-code="${location.code}">Pokaż</button>
+        `;
+        listItem.querySelector('button').addEventListener('click', function() {
+            document.getElementById('natoInput').value = location.code;
+            decodeNatoCode();
+        });
+        list.appendChild(listItem);
+    });
+}
+
 function updateDisplay(lat, lon, natoCode) {
     currentCoordinates = { lat, lon };
     currentNatoCode = natoCode;
@@ -207,7 +228,7 @@ function speakCode() {
     // Create speech utterance
     const msg = new SpeechSynthesisUtterance(currentNatoCode);
     msg.lang = 'en-US';
-    msg.rate = 0.85;
+    msg.rate = 0.6; // Slower rate for better pauses between NATO words
     msg.pitch = 1.0;
     msg.volume = 1.0;
     
