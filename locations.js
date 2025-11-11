@@ -6,8 +6,7 @@
  */
 
 const PREDEFINED_LOCATIONS = [
-    { code: "NVSNLDXWDHIX", name: "Dom" },
-    { code: "NVSNPACFLEOY", name: "Szkoła" },
-    { code: "NVSNLDXWDHIX", name: "Praca" },
-    { code: "NVSNPACFLEOY", name: "Działka" }
+    { code: "NVSMIXVZIRN", name: "przesiadki" },
+    { code: "NVPOHPJJGUR", name: "białki" },
+    { code: "NVPFCXFWNSN", name: "aqua" }
 ];
