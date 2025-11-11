@@ -105,31 +105,32 @@ function parseCoordinates(input) {
     const trimmed = input.trim();
     
     // Try each pattern
-    for (let pattern of COORDINATE_PATTERNS) {
+    for (let i = 0; i < COORDINATE_PATTERNS.length; i++) {
+        const pattern = COORDINATE_PATTERNS[i];
         const match = trimmed.match(pattern);
         if (match) {
             let lat, lon;
             
-            // Pattern 1: 52,26755° N, 22,26155° E
-            if (match.length === 5 && (match[2] || match[4])) {
+            // Pattern 0: 52,26755° N, 22,26155° E (with directions)
+            if (i === 0 && match.length === 5 && (match[2] || match[4])) {
                 lat = parseFloat(match[1].replace(',', '.'));
                 lon = parseFloat(match[3].replace(',', '.'));
                 
-                if (match[2] === 'S' || match[2] === 's') lat = -lat;
-                if (match[4] === 'W' || match[4] === 'w') lon = -lon;
+                if (match[2] && (match[2] === 'S' || match[2] === 's')) lat = -lat;
+                if (match[4] && (match[4] === 'W' || match[4] === 'w')) lon = -lon;
             }
-            // Pattern 2: 52.26755, 22.26155
-            else if (match.length === 3) {
+            // Pattern 1: 52.26755, 22.26155 or 52.26755; 22.26155 (simple format)
+            else if (i === 1 && match.length === 3) {
                 lat = parseFloat(match[1].replace(',', '.'));
                 lon = parseFloat(match[2].replace(',', '.'));
             }
-            // Pattern 3: N 52.26755, E 22.26155
-            else if (match.length === 5) {
+            // Pattern 2: N 52.26755, E 22.26155 (directions first)
+            else if (i === 2 && match.length === 5) {
                 lat = parseFloat(match[2].replace(',', '.'));
                 lon = parseFloat(match[4].replace(',', '.'));
                 
-                if (match[1] === 'S' || match[1] === 's') lat = -lat;
-                if (match[3] === 'W' || match[3] === 'w') lon = -lon;
+                if (match[1] && (match[1] === 'S' || match[1] === 's')) lat = -lat;
+                if (match[3] && (match[3] === 'W' || match[3] === 'w')) lon = -lon;
             }
             
             if (!isNaN(lat) && !isNaN(lon)) {
@@ -138,7 +139,7 @@ function parseCoordinates(input) {
         }
     }
     
-    throw new Error('Invalid coordinate format. Use: 52,26755° N, 22,26155° E or 52.26755, 22.26155');
+    throw new Error('Invalid coordinate format. Use: 52.26755;22.26155 or 52,26755° N, 22,26155° E or 52.26755, 22.26155');
 }
 
 /**
