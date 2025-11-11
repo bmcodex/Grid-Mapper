@@ -16,17 +16,22 @@ Aplikacja jest wdrożona na GitHub Pages i dostępna pod adresem:
 System umożliwia użytkownikom:
 1. **Kliknięcie na mapie** w celu wygenerowania unikalnego, 12-znakowego kodu fonetycznego NATO (np. `Hotel Sierra Alpha Zulu Echo Romeo Golf...`) z **dokładnością do około 1 metra**.
 2. **Dekodowanie kodu NATO** (zarówno pełnych słów fonetycznych, jak i skróconego kodu literowego) w celu natychmiastowego zlokalizowania punktu na mapie.
-3. **Odsłuchanie** kodu za pomocą Web Speech API.
-4. **Udostępnianie** lokalizacji za pomocą unikalnego linku.
-5. **Otwieranie** lokalizacji w popularnych zewnętrznych aplikacjach mapowych (Google Maps, Apple Maps, Waze).
+3. **Wklejanie współrzędnych** w wielu formatach (np. `52,26755° N, 22,26155° E` lub `52.26755, 22.26155`) i konwersja na kody NATO.
+4. **Odsłuchanie** kodu za pomocą Web Speech API.
+5. **Udostępnianie** lokalizacji za pomocą unikalnego linku.
+6. **Otwieranie** lokalizacji w popularnych zewnętrznych aplikacjach mapowych (Google Maps, Apple Maps, Waze, OsmAnd).
 
 ## 🚀 Funkcjonalności
 
 *   **Konwersja Dwukierunkowa:** Współrzędne GPS ↔ Kod Fonetyczny NATO.
+*   **Parsowanie Współrzędnych:** Obsługa wielu formatów współrzędnych:
+    - `52,26755° N, 22,26155° E` (z kierunkami)
+    - `52.26755, 22.26155` (dziesiętne)
+    - `N 52.26755, E 22.26155` (kierunek na początku)
 *   **Wysoka Precyzja:** 12-znakowy kod zapewnia dokładność do około 1 metra.
 *   **Interfejs Mapy:** Interaktywna mapa oparta na **Leaflet.js** i **OpenStreetMap** z ciemnym, inspirowanym wojskiem motywem.
-*   **Synteza Mowy:** Wbudowana funkcja „Odczytaj kod” wykorzystująca **Web Speech API** do poprawnej wymowy NATO.
-*   **Linki do Map Zewnętrznych:** Szybkie linki do otwierania lokalizacji w Apple Maps, Google Maps i Waze.
+*   **Synteza Mowy:** Wbudowana funkcja "Odczytaj kod" wykorzystująca **Web Speech API** do poprawnej wymowy NATO.
+*   **Linki do Map Zewnętrznych:** Szybkie linki do otwierania lokalizacji w Apple Maps, Google Maps, Waze i OsmAnd.
 *   **Linki Udostępniania:** Lokalizacje można udostępniać za pomocą prostego parametru URL (`?c=KOD`).
 *   **Responsywność:** Pełna obsługa na komputerach stacjonarnych i urządzeniach mobilnych.
 
@@ -115,4 +120,5 @@ Dla lokalizacji o współrzędnych `(lat, lon)` generowane są następujące lin
 *   **Apple Maps:** `https://maps.apple.com/?q={lat},{lon}`
 *   **Google Maps:** `https://maps.google.com/?q={lat},{lon}`
 *   **Waze:** `https://waze.com/ul?ll={lat},{lon}`
+*   **OsmAnd:** `https://osmand.net/go?lat={lat}&lon={lon}&z=15`
 
