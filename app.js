@@ -141,7 +141,7 @@ function convertGoogleMapsUrl() {
     const coords = extractCoordsFromGoogleMapsUrl(input);
     
     if (!coords) {
-        showNotification('❌ Could not find coordinates in the provided URL.', 'error');
+        showNotification('❌ Could not find coordinates in the provided URL. Please use the full URL from your browser\'s address bar (containing @latitude,longitude).', 'error');
         return;
     }
     
