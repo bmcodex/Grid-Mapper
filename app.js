@@ -44,7 +44,7 @@ function initMap() {
 /**
  * Initialize event listeners for UI elements
  */
-fuconst W3W_API_KEY = 'ZIU66HD2'; // Provided API Key
+const W3W_API_KEY = 'ZIU66HD2'; // Provided API Key
 const W3W_LANGUAGE = 'zu'; // Zulu language code
 
 function initEventListeners() {
