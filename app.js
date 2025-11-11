@@ -55,6 +55,8 @@ function initMap() {
  * Initialize event listeners for UI elements
  */
 function initEventListeners() {
+    initializeTabs();
+    displayAllRadioCodes();
     loadSavedLocations();
     // Decode button
     document.getElementById('decodeBtn').addEventListener('click', decodeNatoCode);
@@ -449,4 +451,48 @@ function showNotification(message, type = 'info') {
     setTimeout(() => {
         notification.classList.add('hidden');
     }, 2000);
+}
+
+/**
+ * Initialize tabs
+ */
+function initializeTabs() {
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tabName = this.getAttribute('data-tab');
+            
+            // Remove active class from all buttons and contents
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            
+            // Add active class to clicked button and corresponding content
+            this.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+        });
+    });
+}
+
+/**
+ * Display all radio codes in list
+ */
+function displayAllRadioCodes() {
+    const codesList = document.getElementById('radioCodesList');
+    let html = '';
+    
+    RADIO_CODES.forEach(code => {
+        html += `
+            <div class="code-row">
+                <div class="code-header">
+                    <span class="code-code">${code.code}</span>
+                    <span class="code-meaning">${code.meaning}</span>
+                </div>
+                <div class="code-description">${code.description}</div>
+            </div>
+        `;
+    });
+    
+    codesList.innerHTML = html;
 }

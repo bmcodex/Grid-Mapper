@@ -17,59 +17,87 @@
         <div class="main-content">
             <div class="map-container">
                 <div id="map"></div>
+                <div class="map-controls">
+                    <button id="toggleGridBtn" class="map-control-btn" title="Toggle Grid">🔲 Grid</button>
+                    <button id="toggleSatelliteBtn" class="map-control-btn" title="Toggle Satellite">🛰️ Satellite</button>
+                </div>
             </div>
             
             <div class="info-panel">
-                <div class="input-section">
-                    <h2>Enter NATO Code</h2>
-                    <input type="text" id="natoInput" placeholder="e.g., HSALERG or Hotel Sierra Alpha..." />
-                    <button id="decodeBtn" class="btn-primary">📍 Show on Map</button>
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="coordinates">📍 Współrzędne</button>
+                    <button class="tab-btn" data-tab="radio">📻 Kody Radiowe</button>
                 </div>
                 
-                <div class="input-section">
-                    <h2>Wklej Współrzędne</h2>
-                    <input type="text" id="coordinatesInput" placeholder="e.g., 52.26755;22.26155 or 52,26755° N, 22,26155° E" />
-                    <button id="pasteCoordinatesBtn" class="btn-primary">📍 Konwertuj Współrzędne</button>
+                <div id="coordinates-tab" class="tab-content active">
+                    <div class="input-section">
+                        <h2>Enter NATO Code</h2>
+                        <input type="text" id="natoInput" placeholder="e.g., HSALERG or Hotel Sierra Alpha..." />
+                        <button id="decodeBtn" class="btn-primary">📍 Show on Map</button>
+                    </div>
+                    
+                    <div class="input-section">
+                        <h2>Wklej Współrzędne</h2>
+                        <input type="text" id="coordinatesInput" placeholder="e.g., 52.26755;22.26155 or 52,26755° N, 22,26155° E" />
+                        <button id="pasteCoordinatesBtn" class="btn-primary">📍 Konwertuj Współrzędne</button>
+                    </div>
+                    
+                    <div id="resultPanel" class="result-panel hidden">
+                        <h2>Location Details</h2>
+                        <div class="detail-row">
+                            <span class="label">Latitude:</span>
+                            <span id="latValue" class="value">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Longitude:</span>
+                            <span id="lonValue" class="value">-</span>
+                        </div>
+                        <div class="detail-row nato-code-row">
+                            <span class="label">NATO Code:</span>
+                            <span id="natoValue" class="value nato-code">-</span>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button id="copyBtn" class="btn">📋 Copy Code</button>
+                            <button id="speakBtn" class="btn">🔊 Read Code</button>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button id="appleMapsBtn" class="btn-link">🌍 Apple Maps</button>
+                            <button id="googleMapsBtn" class="btn-link">🗺️ Google Maps</button>
+                            <button id="wazeBtn" class="btn-link">🚗 Waze</button>
+                            <button id="osmandBtn" class="btn-link">📍 OsmAnd</button>
+                        </div>
+                        
+                        <div class="share-section">
+                            <button id="shareBtn" class="btn-secondary">🔗 Share Location</button>
+                            <input type="text" id="shareLink" class="share-link hidden" readonly />
+                        </div>
+                    </div>
+                    
+                    <div class="saved-locations">
+                        <h2>Zapisane Położenia</h2>
+                        <ul id="locationsList">
+                            <!-- Locations will be injected here -->
+                        </ul>
+                    </div>
                 </div>
                 
-                <div id="resultPanel" class="result-panel hidden">
-                    <h2>Location Details</h2>
-                    <div class="detail-row">
-                        <span class="label">Latitude:</span>
-                        <span id="latValue" class="value">-</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="label">Longitude:</span>
-                        <span id="lonValue" class="value">-</span>
-                    </div>
-                    <div class="detail-row nato-code-row">
-                        <span class="label">NATO Code:</span>
-                        <span id="natoValue" class="value nato-code">-</span>
+                <div id="radio-tab" class="tab-content">
+                    <div class="input-section">
+                        <h2>Szukaj Kodu</h2>
+                        <input type="text" id="radioCodeInput" placeholder="e.g., 10-4 or potwierdzam" />
+                        <button id="searchRadioCodeBtn" class="btn-primary">🔍 Szukaj</button>
                     </div>
                     
-                    <div class="button-group">
-                        <button id="copyBtn" class="btn">📋 Copy Code</button>
-                        <button id="speakBtn" class="btn">🔊 Read Code</button>
-                    </div>
+                    <div id="radioCodeResult" class="radio-code-result hidden"></div>
                     
-                    <div class="button-group">
-                        <button id="appleMapsBtn" class="btn-link">🌍 Apple Maps</button>
-                        <button id="googleMapsBtn" class="btn-link">🗺️ Google Maps</button>
-                        <button id="wazeBtn" class="btn-link">🚗 Waze</button>
-                        <button id="osmandBtn" class="btn-link">📍 OsmAnd</button>
+                    <div class="radio-codes-list">
+                        <h2>Wszystkie Kody</h2>
+                        <div id="radioCodesList" class="codes-table">
+                            <!-- Radio codes will be injected here -->
+                        </div>
                     </div>
-                    
-                    <div class="share-section">
-                        <button id="shareBtn" class="btn-secondary">🔗 Share Location</button>
-                        <input type="text" id="shareLink" class="share-link hidden" readonly />
-                    </div>
-                </div>
-                
-                <div class="saved-locations">
-                    <h2>Zapisane Położenia</h2>
-                    <ul id="locationsList">
-                        <!-- Locations will be injected here -->
-                    </ul>
                 </div>
                 </div>
             </div>
@@ -81,6 +109,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="nato-converter.js"></script>
     <script src="locations.js"></script>
+    <script src="radio-codes.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
