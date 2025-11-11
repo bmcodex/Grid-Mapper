@@ -6,8 +6,8 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #0a0e1a;
-    color: #e0e0e0;
+    background: #000000; /* Pure Black Background */
+    color: #f0f0f0;
     overflow: hidden;
 }
 
@@ -18,10 +18,10 @@ body {
 }
 
 header {
-    background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
+    background: #0a0a0a; /* Very Dark Header */
     padding: 1rem 2rem;
-    border-bottom: 2px solid #2a3f5f;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    border-bottom: 2px solid #1a1a1a;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
 }
 
 header h1 {
@@ -49,16 +49,16 @@ header p {
 #map {
     width: 100%;
     height: 100%;
-    background: #0a0e1a;
+    background: #000000; /* Map container background is black, but tiles will cover it */
 }
 
 .info-panel {
     width: 400px;
-    background: #151b28;
-    border-left: 2px solid #2a3f5f;
+    background: #0a0a0a; /* Very Dark Panel */
+    border-left: 2px solid #1a1a1a;
     padding: 2rem;
     overflow-y: auto;
-    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.8);
 }
 
 .input-section {
@@ -74,8 +74,8 @@ header p {
 input[type="text"] {
     width: 100%;
     padding: 0.8rem;
-    background: #0a0e1a;
-    border: 2px solid #2a3f5f;
+    background: #000000; /* Pure Black Input */
+    border: 2px solid #1a1a1a;
     border-radius: 8px;
     color: #e0e0e0;
     font-size: 1rem;
@@ -122,13 +122,13 @@ input[type="text"]:focus {
 
 .btn-secondary {
     width: 100%;
-    background: #1a2332;
+    background: #000000; /* Pure Black Secondary Button */
     color: #4a9eff;
-    border: 2px solid #2a3f5f;
+    border: 2px solid #1a1a1a;
 }
 
 .btn-secondary:hover {
-    background: #2a3f5f;
+    background: #1a1a1a;
 }
 
 .btn-link {
@@ -167,14 +167,14 @@ input[type="text"]:focus {
     color: #4a9eff;
     margin-bottom: 1rem;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid #2a3f5f;
+    border-bottom: 2px solid #1a1a1a;
 }
 
 .detail-row {
     display: flex;
     justify-content: space-between;
     padding: 0.8rem 0;
-    border-bottom: 1px solid #1a2332;
+    border-bottom: 1px solid #1a1a1a;
 }
 
 .detail-row .label {
@@ -188,7 +188,7 @@ input[type="text"]:focus {
 }
 
 .nato-code-row {
-    background: #0a0e1a;
+    background: #000000; /* Pure Black NATO Code Box */
     padding: 1rem;
     border-radius: 8px;
     margin: 1rem 0;
@@ -205,14 +205,14 @@ input[type="text"]:focus {
 .share-section {
     margin-top: 1.5rem;
     padding-top: 1.5rem;
-    border-top: 2px solid #2a3f5f;
+    border-top: 2px solid #1a1a1a;
 }
 
 .share-link {
     width: 100%;
     margin-top: 1rem;
     padding: 0.8rem;
-    background: #0a0e1a;
+    background: #000000; /* Pure Black Share Link Input */
     border: 2px solid #2a5f3a;
     border-radius: 8px;
     color: #5dff8f;
@@ -222,7 +222,7 @@ input[type="text"]:focus {
 .saved-locations {
     margin-top: 2rem;
     padding-top: 1rem;
-    border-top: 2px solid #2a3f5f;
+    border-top: 2px solid #1a1a1a;
 }
 
 .saved-locations h2 {
@@ -240,7 +240,7 @@ input[type="text"]:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #1a2332;
+    background: #0a0a0a; /* Very Dark Location Item */
     padding: 0.7rem 1rem;
     border-radius: 6px;
     margin-bottom: 0.5rem;
@@ -328,7 +328,7 @@ input[type="text"]:focus {
         width: 100%;
         height: 50vh;
         border-left: none;
-        border-top: 2px solid #2a3f5f;
+        border-top: 2px solid #1a1a1a;
     }
     
     header h1 {
