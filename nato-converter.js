@@ -44,20 +44,17 @@ function gpsToNato(latitude, longitude) {
     
     // Generate code by interleaving latitude and longitude characters
     for (let i = 0; i < CODE_LENGTH; i++) {
-        // Multiply by 26 (base-26 system)
-        normLat *= 26;
-        normLon *= 26;
-        
-        // Get integer part (index into NATO alphabet)
-        // Ensure index is max 25 to prevent array out of bounds
-        const latIndex = Math.min(25, Math.floor(normLat));
-        const lonIndex = Math.min(25, Math.floor(normLon));
-        
         // Add NATO words (interleaved: lat, lon, lat, lon, ...)
         if (i % 2 === 0) {
+            // Latitude step
+            normLat *= 26;
+            const latIndex = Math.min(25, Math.floor(normLat));
             natoCode.push(NATO_ALPHABET[latIndex]);
             normLat -= latIndex;
         } else {
+            // Longitude step
+            normLon *= 26;
+            const lonIndex = Math.min(25, Math.floor(normLon));
             natoCode.push(NATO_ALPHABET[lonIndex]);
             normLon -= lonIndex;
         }
