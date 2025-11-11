@@ -44,29 +44,32 @@ function initMap() {
 /**
  * Initialize event listeners for UI elements
  */
+fuconst W3W_API_KEY = 'YOUR_W3W_API_KEY'; // Placeholder for API Key
+const W3W_LANGUAGE = 'zu'; // Zulu language code
+
 function initEventListeners() {
     loadSavedLocations();
     // Decode button
     document.getElementById('decodeBtn').addEventListener('click', decodeNatoCode);
     
-    // Convert Maps button
-    document.getElementById('convertMapsBtn').addEventListener('click', convertGoogleMapsUrl);
+    // W3W Convert button
+    document.getElementById('convertW3WBtn').addEventListener('click', convertW3WToNato);
     
-    // Enter key in input field
+    //    // Enter key in input field
     document.getElementById('natoInput').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             decodeNatoCode();
         }
     });
     
-    // Enter key in Google Maps input field
-    document.getElementById('googleMapsInput').addEventListener('keypress', function(e) {
+    // Enter key in W3W input field
+    document.getElementById('w3wInput').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
-            convertGoogleMapsUrl();
+            convertW3WToNato();
         }
     });
     
-    // Copy button
+    // Copy buttontton
     document.getElementById('copyBtn').addEventListener('click', copyCode);
     
     // Speak button
@@ -84,127 +87,66 @@ function initEventListeners() {
 /**
  * Handle map click event
  */
-/**
- * Extracts coordinates from a Google Maps URL.
- * Supports short links (goo.gl/maps/...) and long links (maps.google.com/maps?q=...)
- * @param {string} url - The Google Maps URL.
- * @returns {object|null} {lat, lon} or null if not found.
- */
-function extractCoordsFromGoogleMapsUrl(url) {
-    // Regex to find coordinates in the format @lat,lon,zoom or /lat,lon/
-    const regex = /@(-?\d+\.\d+),(-?\d+\.\d+)|(\/(-?\d+\.\d+),(-?\d+\.\d+)\/)/;
-    const match = url.match(regex);
 
-    if (match) {
-        // Match 1 and 2 are for @lat,lon format
-        let lat = parseFloat(match[1]);
-        let lon = parseFloat(match[2]);
-
-        // Match 4 and 5 are for /lat,lon/ format
-        if (isNaN(lat) && match[4] && match[5]) {
-            lat = parseFloat(match[4]);
-            lon = parseFloat(match[5]);
-        }
-        
-        if (!isNaN(lat) && !isNaN(lon)) {
-            return { lat, lon };
-        }
-    }
-    
-    // Fallback for simple query links (e.g., maps.google.com/?q=lat,lon)
-    const queryRegex = /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/;
-    const queryMatch = url.match(queryRegex);
-    
-    if (queryMatch && queryMatch.length >= 3) {
-        const lat = parseFloat(queryMatch[1]);
-        const lon = parseFloat(queryMatch[2]);
-        
-        if (!isNaN(lat) && !isNaN(lon)) {
-            return { lat, lon };
-        }
-    }
-
-    return null;
-}
 
 /**
- * Converts a Google Maps URL to a NATO code.
+ * Converts a What3Words address to NATO code.
  */
-async function convertGoogleMapsUrl() {
-    const input = document.getElementById('googleMapsInput').value.trim();
+async function convertW3WToNato() {
+    const w3wAddress = document.getElementById('w3wInput').value.trim();
     
-    if (!input) {
-        showNotification('⚠️ Please paste a Google Maps URL', 'warning');
+    if (!w3wAddress) {
+        showNotification('⚠️ Please enter a What3Words address', 'warning');
         return;
     }
     
-    showNotification('⏳ Resolving short URL...', 'info');
+    if (W3W_API_KEY === 'YOUR_W3W_API_KEY') {
+        showNotification('❌ W3W API Key is missing. Please replace YOUR_W3W_API_KEY in app.js.', 'error');
+        return;
+    }
 
-    let fullUrl = input;
-    
-    // Check if it's a short URL (e.g., maps.app.goo.gl, goo.gl, or any short domain)
-    if (input.includes('goo.gl') || input.includes('maps.app.goo.gl') || input.length < 50) {
-        try {
-            // Use a public proxy to resolve the redirect and get the full URL
-            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(input)}`;
-            const response = await fetch(proxyUrl);
-            const data = await response.json();
-            
-            // The full URL is often found in the 'url' property of the response
-            // or we can try to parse the content for the final URL
-            if (data.contents) {
-                // Try to find the final URL in the response content (less reliable)
-                const finalUrlMatch = data.contents.match(/URL=([^"']+)/i);
-                if (finalUrlMatch) {
-                    fullUrl = finalUrlMatch[1];
-                }
-            }
-            
-            // Fallback: If the proxy returns the original URL, it means it didn't resolve.
-            // We'll rely on the original input if the proxy fails to resolve.
-            if (fullUrl === input) {
-                showNotification('⚠️ Could not resolve short URL. Trying to parse original input.', 'warning');
-            } else {
-                showNotification('✅ URL resolved. Extracting coordinates...', 'success');
-            }
+    showNotification('⏳ Converting What3Words to GPS...', 'info');
 
-        } catch (error) {
-            showNotification('❌ Error resolving short URL via proxy.', 'error');
-            // Continue with original input as a fallback
-        }
-    }
-    
-    const coords = extractCoordsFromGoogleMapsUrl(fullUrl);
-    
-    if (!coords) {
-        showNotification('❌ Could not find coordinates in the provided URL. Please use the full URL from your browser\'s address bar (containing @latitude,longitude).', 'error');
-        return;
-    }
-    
-    const lat = coords.lat;
-    const lon = coords.lon;
-    
-    // Validate coordinates
-    if (!isValidCoordinate(lat, lon)) {
-        showNotification('⚠️ Coordinates from URL are outside Poland boundaries', 'warning');
-        return;
-    }
-    
     try {
+        const apiUrl = `https://api.what3words.com/v3/convert-to-coordinates?words=${w3wAddress}&key=${W3W_API_KEY}`;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        if (data.error) {
+            showNotification(`❌ W3W Error: ${data.error.message}`, 'error');
+            return;
+        }
+
+        const lat = data.coordinates.lat;
+        const lon = data.coordinates.lng;
+
+        // Validate coordinates
+        if (!isValidCoordinate(lat, lon)) {
+            showNotification('⚠️ Coordinates from W3W are outside Poland boundaries', 'warning');
+            return;
+        }
+
         // Convert to NATO code
         const natoCode = gpsToNato(lat, lon);
-        
+
         // Update display
         updateDisplay(lat, lon, natoCode);
-        
+
         // Add marker to map
         addMarker(lat, lon);
         map.setView([lat, lon], 15);
+
+        // Optional: Get W3W address in Zulu for display
+        const reverseApiUrl = `https://api.what3words.com/v3/convert-to-3wa?coordinates=${lat},${lon}&language=${W3W_LANGUAGE}&key=${W3W_API_KEY}`;
+        const reverseResponse = await fetch(reverseApiUrl);
+        const reverseData = await reverseResponse.json();
         
-        showNotification('✅ Link converted successfully!', 'success');
-        
+        let zuluW3W = reverseData.words || 'N/A';
+
+        showNotification(`✅ W3W converted. Zulu: ${zuluW3W}`, 'success');
+
     } catch (error) {
-        showNotification('❌ Error during conversion: ' + error.message, 'error');
+        showNotification('❌ Error during W3W conversion: ' + error.message, 'error');
     }
 }
 
