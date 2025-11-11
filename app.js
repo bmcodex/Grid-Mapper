@@ -228,7 +228,7 @@ function speakCode() {
     // Create speech utterance
     const msg = new SpeechSynthesisUtterance(currentNatoCode);
     msg.lang = 'en-US';
-    msg.rate = 0.6; // Slower rate for better pauses between NATO words
+    msg.rate = 0.4; // Very slow rate to simulate half-second pauses between words
     msg.pitch = 1.0;
     msg.volume = 1.0;
     
