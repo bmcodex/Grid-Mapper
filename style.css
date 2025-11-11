@@ -18,7 +18,7 @@ body {
 }
 
 header {
-    background: #0a0a0a; /* Very Dark Header */
+    background: #000000; /* Pure Black Header */
     padding: 1rem 2rem;
     border-bottom: 2px solid #1a1a1a;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
@@ -54,7 +54,7 @@ header p {
 
 .info-panel {
     width: 400px;
-    background: #0a0a0a; /* Very Dark Panel */
+    background: #000000; /* Pure Black Panel */
     border-left: 2px solid #1a1a1a;
     padding: 2rem;
     overflow-y: auto;
