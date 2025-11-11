@@ -130,7 +130,7 @@ function extractCoordsFromGoogleMapsUrl(url) {
 /**
  * Converts a Google Maps URL to a NATO code.
  */
-function convertGoogleMapsUrl() {
+async function convertGoogleMapsUrl() {
     const input = document.getElementById('googleMapsInput').value.trim();
     
     if (!input) {
@@ -138,7 +138,43 @@ function convertGoogleMapsUrl() {
         return;
     }
     
-    const coords = extractCoordsFromGoogleMapsUrl(input);
+    showNotification('⏳ Resolving short URL...', 'info');
+
+    let fullUrl = input;
+    
+    // Check if it's a short URL (e.g., maps.app.goo.gl, goo.gl, or any short domain)
+    if (input.includes('goo.gl') || input.includes('maps.app.goo.gl') || input.length < 50) {
+        try {
+            // Use a public proxy to resolve the redirect and get the full URL
+            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(input)}`;
+            const response = await fetch(proxyUrl);
+            const data = await response.json();
+            
+            // The full URL is often found in the 'url' property of the response
+            // or we can try to parse the content for the final URL
+            if (data.contents) {
+                // Try to find the final URL in the response content (less reliable)
+                const finalUrlMatch = data.contents.match(/URL=([^"']+)/i);
+                if (finalUrlMatch) {
+                    fullUrl = finalUrlMatch[1];
+                }
+            }
+            
+            // Fallback: If the proxy returns the original URL, it means it didn't resolve.
+            // We'll rely on the original input if the proxy fails to resolve.
+            if (fullUrl === input) {
+                showNotification('⚠️ Could not resolve short URL. Trying to parse original input.', 'warning');
+            } else {
+                showNotification('✅ URL resolved. Extracting coordinates...', 'success');
+            }
+
+        } catch (error) {
+            showNotification('❌ Error resolving short URL via proxy.', 'error');
+            // Continue with original input as a fallback
+        }
+    }
+    
+    const coords = extractCoordsFromGoogleMapsUrl(fullUrl);
     
     if (!coords) {
         showNotification('❌ Could not find coordinates in the provided URL. Please use the full URL from your browser\'s address bar (containing @latitude,longitude).', 'error');
