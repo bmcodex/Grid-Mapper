@@ -17,6 +17,10 @@
         <div class="main-content">
             <div class="map-container">
                 <div id="map"></div>
+                <div class="map-controls">
+                    <button id="toggleGridBtn" class="map-control-btn" title="Toggle Grid">🔲 Grid</button>
+                    <button id="toggleSatelliteBtn" class="map-control-btn" title="Toggle Satellite">🛰️ Satellite</button>
+                </div>
             </div>
             
             <div class="info-panel">
@@ -71,6 +75,13 @@
                         <!-- Locations will be injected here -->
                     </ul>
                 </div>
+                
+                <div class="radio-codes-section">
+                    <h2>Kody Radiowe</h2>
+                    <input type="text" id="radioCodeInput" placeholder="e.g., 10-4 or potwierdzam" />
+                    <button id="searchRadioCodeBtn" class="btn-primary">🔍 Szukaj Kodu</button>
+                    <div id="radioCodeResult" class="radio-code-result hidden"></div>
+                </div>
                 </div>
             </div>
         </div>
@@ -81,6 +92,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="nato-converter.js"></script>
     <script src="locations.js"></script>
+    <script src="radio-codes.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

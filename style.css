@@ -342,3 +342,87 @@ input[type="text"]:focus {
         flex-direction: column;
     }
 }
+
+
+/* Map Controls */
+.map-controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 1000;
+}
+
+.map-control-btn {
+    padding: 0.6rem 1rem;
+    background: #2a3f5f;
+    color: #e0e0e0;
+    border: 2px solid #1a1a1a;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.map-control-btn:hover {
+    background: #3a5070;
+    border-color: #4a9eff;
+}
+
+.map-control-btn.active {
+    background: #4a9eff;
+    color: white;
+    border-color: #4a9eff;
+}
+
+/* Radio Codes Section */
+.radio-codes-section {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 2px solid #1a1a1a;
+}
+
+.radio-codes-section h2 {
+    font-size: 1.2rem;
+    color: #4a9eff;
+    margin-bottom: 1rem;
+}
+
+.radio-code-result {
+    background: #0a0a0a;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #4a9eff;
+    margin-top: 1rem;
+}
+
+.radio-code-result.hidden {
+    display: none !important;
+}
+
+.radio-code-item {
+    margin-bottom: 0.8rem;
+}
+
+.radio-code-item:last-child {
+    margin-bottom: 0;
+}
+
+.radio-code-code {
+    font-weight: 700;
+    color: #5dff8f;
+    font-family: 'Courier New', monospace;
+}
+
+.radio-code-meaning {
+    color: #e0e0e0;
+    font-weight: 600;
+    margin: 0.3rem 0;
+}
+
+.radio-code-description {
+    color: #8a9ab0;
+    font-size: 0.9rem;
+}
