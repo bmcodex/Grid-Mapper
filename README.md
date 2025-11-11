@@ -1,5 +1,16 @@
 # 🗺️ Grid Mapper: System Współrzędnych Fonetycznych NATO
 
+[![Status Wdrożenia](https://github.com/bmcodex/Grid-Mapper/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/bmcodex/Grid-Mapper/actions/workflows/pages/pages-build-deployment)
+
+## 🌐 Działająca Aplikacja
+
+Aplikacja jest wdrożona na GitHub Pages i dostępna pod adresem:
+**[https://bmcodex.github.io/Grid-Mapper/](https://bmcodex.github.io/Grid-Mapper/)**
+
+---
+
+
+
 **Grid Mapper** to aplikacja internetowa zaprojektowana w celu zapewnienia prostego, fonetycznego i bardzo precyzyjnego systemu lokalizacji dla obszaru Polski. System ten jest inspirowany koncepcją Geohash, ale wykorzystuje alfabet fonetyczny NATO do kodowania.
 
 System umożliwia użytkownikom:
