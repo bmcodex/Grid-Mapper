@@ -1,48 +1,48 @@
-# 🗺️ Grid Mapper: NATO Phonetic Coordinate System
+# 🗺️ Grid Mapper: System Współrzędnych Fonetycznych NATO
 
-**Grid Mapper** is a web application designed to provide a simple, phonetic, and highly precise location system for the area of Poland, inspired by the Geohash concept but utilizing the NATO phonetic alphabet for encoding.
+**Grid Mapper** to aplikacja internetowa zaprojektowana w celu zapewnienia prostego, fonetycznego i bardzo precyzyjnego systemu lokalizacji dla obszaru Polski. System ten jest inspirowany koncepcją Geohash, ale wykorzystuje alfabet fonetyczny NATO do kodowania.
 
-The system allows users to:
-1. **Click on a map** to generate a unique, 12-character NATO phonetic code (e.g., `Hotel Sierra Alpha Zulu Echo Romeo Golf...`) with **~1 meter accuracy**.
-2. **Decode a NATO code** (either the full phonetic words or the short letter code) to instantly locate the point on the map.
-3. **Listen** to the code being read aloud using the Web Speech API.
-4. **Share** the location via a unique link.
-5. **Open** the location in popular external map applications (Google Maps, Apple Maps, Waze).
+System umożliwia użytkownikom:
+1. **Kliknięcie na mapie** w celu wygenerowania unikalnego, 12-znakowego kodu fonetycznego NATO (np. `Hotel Sierra Alpha Zulu Echo Romeo Golf...`) z **dokładnością do około 1 metra**.
+2. **Dekodowanie kodu NATO** (zarówno pełnych słów fonetycznych, jak i skróconego kodu literowego) w celu natychmiastowego zlokalizowania punktu na mapie.
+3. **Odsłuchanie** kodu za pomocą Web Speech API.
+4. **Udostępnianie** lokalizacji za pomocą unikalnego linku.
+5. **Otwieranie** lokalizacji w popularnych zewnętrznych aplikacjach mapowych (Google Maps, Apple Maps, Waze).
 
-## 🚀 Features
+## 🚀 Funkcjonalności
 
-*   **Bidirectional Conversion:** GPS coordinates ↔ NATO Phonetic Code.
-*   **High Precision:** 12-character code provides accuracy down to approximately 1 meter.
-*   **Map Interface:** Interactive map powered by **Leaflet.js** and **OpenStreetMap** with a dark, military-inspired theme.
-*   **Speech Synthesis:** Built-in "Read Code" functionality using the **Web Speech API** for correct NATO pronunciation.
-*   **External Map Links:** Quick links to open the location in Apple Maps, Google Maps, and Waze.
-*   **Shareable Links:** Locations can be shared via a simple URL parameter (`?c=CODE`).
-*   **Responsive Design:** Full support for desktop and mobile devices.
+*   **Konwersja Dwukierunkowa:** Współrzędne GPS ↔ Kod Fonetyczny NATO.
+*   **Wysoka Precyzja:** 12-znakowy kod zapewnia dokładność do około 1 metra.
+*   **Interfejs Mapy:** Interaktywna mapa oparta na **Leaflet.js** i **OpenStreetMap** z ciemnym, inspirowanym wojskiem motywem.
+*   **Synteza Mowy:** Wbudowana funkcja „Odczytaj kod” wykorzystująca **Web Speech API** do poprawnej wymowy NATO.
+*   **Linki do Map Zewnętrznych:** Szybkie linki do otwierania lokalizacji w Apple Maps, Google Maps i Waze.
+*   **Linki Udostępniania:** Lokalizacje można udostępniać za pomocą prostego parametru URL (`?c=KOD`).
+*   **Responsywność:** Pełna obsługa na komputerach stacjonarnych i urządzeniach mobilnych.
 
-## 🧮 The NATO Grid Algorithm
+## 🧮 Algorytm Siatki NATO
 
-The core of the application is a custom hierarchical geographic encoding algorithm, similar to Geohash, but using a Base-26 system based on the 26 letters of the NATO phonetic alphabet.
+Rdzeniem aplikacji jest niestandardowy hierarchiczny algorytm kodowania geograficznego, podobny do Geohash, ale wykorzystujący system Base-26 oparty na 26 literach alfabetu fonetycznego NATO.
 
-### Geographic Scope (Poland)
+### Zakres Geograficzny (Polska)
 
-The system is calibrated for the following bounding box:
+System jest skalibrowany dla następującego obszaru granicznego:
 
-| Coordinate | Minimum | Maximum | Range |
+| Współrzędna | Minimum | Maksimum | Zakres |
 | :--- | :--- | :--- | :--- |
-| **Latitude** | 49.0°N | 55.0°N | 6.0° |
-| **Longitude** | 14.0°E | 24.0°E | 10.0° |
+| **Szerokość (Latitude)** | 49.0°N | 55.0°N | 6.0° |
+| **Długość (Longitude)** | 14.0°E | 24.0°E | 10.0° |
 
-### Encoding (GPS → NATO Code)
+### Kodowanie (GPS → Kod NATO)
 
-1.  **Normalization:** The latitude and longitude are normalized to a `0.0` to `1.0` range within the defined bounds.
-    ```
+1.  **Normalizacja:** Szerokość i długość geograficzna są normalizowane do zakresu od `0.0` do `1.0` w ramach zdefiniowanych granic.
+    ```javascript
     norm_lat = (latitude - 49.0) / 6.0
     norm_lon = (longitude - 14.0) / 10.0
     ```
-2.  **Base-26 Conversion:** The normalized values are iteratively multiplied by 26. The integer part gives the index (0-25) for the NATO alphabet, and the fractional part is used for the next iteration.
-3.  **Interleaving:** The resulting indices for latitude and longitude are interleaved to form the final code (e.g., `Lat1`, `Lon1`, `Lat2`, `Lon2`, ...).
+2.  **Konwersja Base-26:** Znormalizowane wartości są iteracyjnie mnożone przez 26. Część całkowita daje indeks (0-25) dla alfabetu NATO, a część ułamkowa jest używana do następnej iteracji.
+3.  **Przeplatanie:** Otrzymane indeksy dla szerokości i długości geograficznej są przeplatane, tworząc ostateczny kod (np. `Lat1`, `Lon1`, `Lat2`, `Lon2`, ...).
 
-| Index (0-25) | NATO Phonetic Word | Letter |
+| Indeks (0-25) | Słowo Fonetyczne NATO | Litera |
 | :--- | :--- | :--- |
 | 7 | Hotel | H |
 | 18 | Sierra | S |
@@ -50,60 +50,60 @@ The system is calibrated for the following bounding box:
 | 25 | Zulu | Z |
 | ... | ... | ... |
 
-### Decoding (NATO Code → GPS)
+### Dekodowanie (Kod NATO → GPS)
 
-The process is reversed:
-1.  Each letter in the code is converted back to its index (0-25).
-2.  The indices are used to reconstruct the normalized latitude (`decoded_lat`) and longitude (`decoded_lon`) values.
-3.  The normalized values are scaled back to the original GPS range.
-    ```
+Proces jest odwrócony:
+1.  Każda litera w kodzie jest konwertowana z powrotem na swój indeks (0-25).
+2.  Indeksy są używane do rekonstrukcji znormalizowanych wartości szerokości (`decoded_lat`) i długości (`decoded_lon`).
+3.  Znormalizowane wartości są skalowane z powrotem do oryginalnego zakresu GPS.
+    ```javascript
     latitude = 49.0 + (decoded_lat * 6.0)
     longitude = 14.0 + (decoded_lon * 10.0)
     ```
 
-## 🛠️ Technology Stack
+## 🛠️ Stos Technologiczny
 
-*   **Frontend:** Vanilla JavaScript (ES6+)
-*   **Mapping:** [Leaflet.js](https://leafletjs.com/) with OpenStreetMap tiles
-*   **Styling:** Custom CSS (Dark Mode)
-*   **Speech:** Web Speech API (`SpeechSynthesis`)
+*   **Frontend:** Czysty JavaScript (ES6+)
+*   **Mapowanie:** [Leaflet.js](https://leafletjs.com/) z kafelkami OpenStreetMap
+*   **Stylizacja:** Niestandardowy CSS (Ciemny Motyw)
+*   **Mowa:** Web Speech API (`SpeechSynthesis`)
 
-## 💻 Local Development
+## 💻 Uruchomienie Lokalnie
 
-The application is a static web page and can be run by simply opening `index.html` in a modern web browser.
+Aplikacja jest statyczną stroną internetową i można ją uruchomić, po prostu otwierając plik `index.html` w nowoczesnej przeglądarce.
 
-### Prerequisites
+### Wymagania Wstępne
 
-*   A modern web browser (Chrome, Firefox, Edge, Safari)
+*   Nowoczesna przeglądarka internetowa (Chrome, Firefox, Edge, Safari)
 
-### Setup
+### Konfiguracja
 
-1.  Clone the repository:
+1.  Sklonuj repozytorium:
     ```bash
     git clone https://github.com/bmcodex/Grid-Mapper.git
     cd Grid-Mapper
     ```
-2.  Open `index.html` in your browser.
+2.  Otwórz `index.html` w swojej przeglądarce.
 
-## 🧪 Example Test Case
+## 🧪 Przykład Testowy
 
-Using the coordinates for **Siedlce**: `52.1677`, `22.2903`
+Używając współrzędnych dla **Siedlec**: `52.1677`, `22.2903`
 
-| Coordinate | Value |
+| Współrzędna | Wartość |
 | :--- | :--- |
-| **Latitude** | 52.1677 |
-| **Longitude** | 22.2903 |
-| **NATO Code** | `Mike India Charlie Hotel Alpha Lima Sierra...` |
+| **Szerokość (Latitude)** | 52.1677 |
+| **Długość (Longitude)** | 22.2903 |
+| **Oczekiwany Kod NATO** | `Mike India Charlie Hotel Alpha Lima Sierra...` |
 
-The application should correctly convert these coordinates and display the result.
+Aplikacja powinna poprawnie przekonwertować te współrzędne i wyświetlić wynik.
 
-## 🔗 External Links Generated
+## 🔗 Generowane Linki Zewnętrzne
 
-For a location at `(lat, lon)`, the following links are generated:
+Dla lokalizacji o współrzędnych `(lat, lon)` generowane są następujące linki:
 
 *   **Apple Maps:** `https://maps.apple.com/?q={lat},{lon}`
 *   **Google Maps:** `https://maps.google.com/?q={lat},{lon}`
 *   **Waze:** `https://waze.com/ul?ll={lat},{lon}`
 
 ---
-*Project created by Manus Agent.*
+*Projekt stworzony przez Agenta Manus.*
