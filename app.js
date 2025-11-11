@@ -91,13 +91,20 @@ function initEventListeners() {
  * @returns {object|null} {lat, lon} or null if not found.
  */
 function extractCoordsFromGoogleMapsUrl(url) {
-    // Regex to find coordinates in the format @lat,lon,zoom
-    const regex = /@(-?\d+\.\d+),(-?\d+\.\d+)/;
+    // Regex to find coordinates in the format @lat,lon,zoom or /lat,lon/
+    const regex = /@(-?\d+\.\d+),(-?\d+\.\d+)|(\/(-?\d+\.\d+),(-?\d+\.\d+)\/)/;
     const match = url.match(regex);
 
-    if (match && match.length >= 3) {
-        const lat = parseFloat(match[1]);
-        const lon = parseFloat(match[2]);
+    if (match) {
+        // Match 1 and 2 are for @lat,lon format
+        let lat = parseFloat(match[1]);
+        let lon = parseFloat(match[2]);
+
+        // Match 4 and 5 are for /lat,lon/ format
+        if (isNaN(lat) && match[4] && match[5]) {
+            lat = parseFloat(match[4]);
+            lon = parseFloat(match[5]);
+        }
         
         if (!isNaN(lat) && !isNaN(lon)) {
             return { lat, lon };
