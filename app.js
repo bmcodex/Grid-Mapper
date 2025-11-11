@@ -9,6 +9,16 @@ let currentMarker;
 let currentCoordinates = null;
 let currentNatoCode = null;
 
+// Coordinate parsing patterns
+const COORDINATE_PATTERNS = [
+    // Format: 52,26755° N, 22,26155° E
+    /^\s*([+-]?\d+[.,]\d+)°?\s*([NS])?\s*[,;]?\s*([+-]?\d+[.,]\d+)°?\s*([EW])?\s*$/i,
+    // Format: 52.26755, 22.26155
+    /^\s*([+-]?\d+[.,]\d+)\s*[,;]\s*([+-]?\d+[.,]\d+)\s*$/,
+    // Format: N 52.26755, E 22.26155
+    /^\s*([NS])\s*([+-]?\d+[.,]\d+)\s*[,;]\s*([EW])\s*([+-]?\d+[.,]\d+)\s*$/i
+];
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     initMap();
@@ -44,16 +54,13 @@ function initMap() {
 /**
  * Initialize event listeners for UI elements
  */
-const W3W_API_KEY = 'ZIU66HD2'; // Provided API Key
-const W3W_LANGUAGE = 'zu'; // Zulu language code
-
 function initEventListeners() {
     loadSavedLocations();
     // Decode button
     document.getElementById('decodeBtn').addEventListener('click', decodeNatoCode);
     
-    // W3W Convert button
-    document.getElementById('convertW3WBtn').addEventListener('click', convertW3WToNato);
+    // Paste Coordinates button
+    document.getElementById('pasteCoordinatesBtn').addEventListener('click', convertCoordinatesToNato);
     
     //    // Enter key in input field
     document.getElementById('natoInput').addEventListener('keypress', function(e) {
@@ -62,10 +69,10 @@ function initEventListeners() {
         }
     });
     
-    // Enter key in W3W input field
-    document.getElementById('w3wInput').addEventListener('keypress', function(e) {
+    // Enter key in Coordinates input field
+    document.getElementById('coordinatesInput').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
-            convertW3WToNato();
+            convertCoordinatesToNato();
         }
     });
     
@@ -79,6 +86,7 @@ function initEventListeners() {
     document.getElementById('appleMapsBtn').addEventListener('click', openAppleMaps);
     document.getElementById('googleMapsBtn').addEventListener('click', openGoogleMaps);
     document.getElementById('wazeBtn').addEventListener('click', openWaze);
+    document.getElementById('osmandBtn').addEventListener('click', openOsmAnd);
     
     // Share button
     document.getElementById('shareBtn').addEventListener('click', shareLocation);
@@ -90,63 +98,84 @@ function initEventListeners() {
 
 
 /**
- * Converts a What3Words address to NATO code.
+ * Parse coordinates from various formats
+ * Supports: 52,26755° N, 22,26155° E or 52.26755, 22.26155 or N 52.26755, E 22.26155
  */
-async function convertW3WToNato() {
-    const w3wAddress = document.getElementById('w3wInput').value.trim();
+function parseCoordinates(input) {
+    const trimmed = input.trim();
     
-    if (!w3wAddress) {
-        showNotification('⚠️ Please enter a What3Words address', 'warning');
+    // Try each pattern
+    for (let pattern of COORDINATE_PATTERNS) {
+        const match = trimmed.match(pattern);
+        if (match) {
+            let lat, lon;
+            
+            // Pattern 1: 52,26755° N, 22,26155° E
+            if (match.length === 5 && (match[2] || match[4])) {
+                lat = parseFloat(match[1].replace(',', '.'));
+                lon = parseFloat(match[3].replace(',', '.'));
+                
+                if (match[2] === 'S' || match[2] === 's') lat = -lat;
+                if (match[4] === 'W' || match[4] === 'w') lon = -lon;
+            }
+            // Pattern 2: 52.26755, 22.26155
+            else if (match.length === 3) {
+                lat = parseFloat(match[1].replace(',', '.'));
+                lon = parseFloat(match[2].replace(',', '.'));
+            }
+            // Pattern 3: N 52.26755, E 22.26155
+            else if (match.length === 5) {
+                lat = parseFloat(match[2].replace(',', '.'));
+                lon = parseFloat(match[4].replace(',', '.'));
+                
+                if (match[1] === 'S' || match[1] === 's') lat = -lat;
+                if (match[3] === 'W' || match[3] === 'w') lon = -lon;
+            }
+            
+            if (!isNaN(lat) && !isNaN(lon)) {
+                return { latitude: lat, longitude: lon };
+            }
+        }
+    }
+    
+    throw new Error('Invalid coordinate format. Use: 52,26755° N, 22,26155° E or 52.26755, 22.26155');
+}
+
+/**
+ * Convert coordinates from input field to NATO code
+ */
+function convertCoordinatesToNato() {
+    const input = document.getElementById('coordinatesInput').value.trim();
+    
+    if (!input) {
+        showNotification('⚠️ Please enter coordinates', 'warning');
         return;
     }
     
-    if (W3W_API_KEY === 'YOUR_W3W_API_KEY') {
-        showNotification('❌ W3W API Key is missing. Please replace YOUR_W3W_API_KEY in app.js.', 'error');
-        return;
-    }
-
-    showNotification('⏳ Converting What3Words to GPS...', 'info');
-
     try {
-        const apiUrl = `https://api.what3words.com/v3/convert-to-coordinates?words=${w3wAddress}&key=${W3W_API_KEY}`;
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-
-        if (data.error) {
-            showNotification(`❌ W3W Error: ${data.error.message}`, 'error');
-            return;
-        }
-
-        const lat = data.coordinates.lat;
-        const lon = data.coordinates.lng;
-
-        // Validate coordinates
-        if (!isValidCoordinate(lat, lon)) {
-            showNotification('⚠️ Coordinates from W3W are outside Poland boundaries', 'warning');
-            return;
-        }
-
-        // Convert to NATO code
-        const natoCode = gpsToNato(lat, lon);
-
-        // Update display
-        updateDisplay(lat, lon, natoCode);
-
-        // Add marker to map
-        addMarker(lat, lon);
-        map.setView([lat, lon], 15);
-
-        // Optional: Get W3W address in Zulu for display
-        const reverseApiUrl = `https://api.what3words.com/v3/convert-to-3wa?coordinates=${lat},${lon}&language=${W3W_LANGUAGE}&key=${W3W_API_KEY}`;
-        const reverseResponse = await fetch(reverseApiUrl);
-        const reverseData = await reverseResponse.json();
+        // Parse coordinates
+        const coords = parseCoordinates(input);
         
-        let zuluW3W = reverseData.words || 'N/A';
-
-        showNotification(`✅ W3W converted. Zulu: ${zuluW3W}`, 'success');
-
+        // Validate coordinates
+        if (!isValidCoordinate(coords.latitude, coords.longitude)) {
+            showNotification('⚠️ Coordinates are outside Poland boundaries', 'warning');
+            return;
+        }
+        
+        // Convert to NATO code
+        const natoCode = gpsToNato(coords.latitude, coords.longitude);
+        
+        // Update display
+        updateDisplay(coords.latitude, coords.longitude, natoCode);
+        
+        // Add marker and pan to location
+        addMarker(coords.latitude, coords.longitude);
+        map.setView([coords.latitude, coords.longitude], 15);
+        
+        showNotification('✅ Współrzędne skonwertowane!', 'success');
+        
     } catch (error) {
-        showNotification('❌ Error during W3W conversion: ' + error.message, 'error');
+        showNotification('❌ Błąd: ' + error.message, 'error');
     }
 }
 
@@ -338,6 +367,15 @@ function openGoogleMaps() {
 function openWaze() {
     if (!currentCoordinates) return;
     const url = `https://waze.com/ul?ll=${currentCoordinates.lat},${currentCoordinates.lon}`;
+    window.open(url, '_blank');
+}
+
+/**
+ * Open location in OsmAnd
+ */
+function openOsmAnd() {
+    if (!currentCoordinates) return;
+    const url = `https://osmand.net/go?lat=${currentCoordinates.lat}&lon=${currentCoordinates.lon}&z=15`;
     window.open(url, '_blank');
 }
 
