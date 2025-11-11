@@ -49,8 +49,9 @@ function gpsToNato(latitude, longitude) {
         normLon *= 26;
         
         // Get integer part (index into NATO alphabet)
-        const latIndex = Math.floor(normLat);
-        const lonIndex = Math.floor(normLon);
+        // Ensure index is max 25 to prevent array out of bounds
+        const latIndex = Math.min(25, Math.floor(normLat));
+        const lonIndex = Math.min(25, Math.floor(normLon));
         
         // Add NATO words (interleaved: lat, lon, lat, lon, ...)
         if (i % 2 === 0) {
