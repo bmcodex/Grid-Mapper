@@ -9,6 +9,7 @@ body {
     background: #000000; /* Pure Black Background */
     color: #f0f0f0;
     overflow: hidden;
+    /* Cache Buster: 2025-11-11-v1 */
 }
 
 .container {
@@ -223,6 +224,8 @@ input[type="text"]:focus {
     margin-top: 2rem;
     padding-top: 1rem;
     border-top: 2px solid #1a1a1a;
+    /* Ensure visibility */
+    display: block;
 }
 
 .saved-locations h2 {
